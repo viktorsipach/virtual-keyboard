@@ -1,0 +1,28 @@
+{
+  "name": "virtual-keyboard",
+  "version": "1.0.0",
+  "description": "virtual-keyboard",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^6.6.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react": "^7.19.0"
+  },
+  "scripts": {
+    "lint": "./node_modules/.bin/eslint index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/viktorsipach/virtual-keyboard.git"
+  },
+  "author": "Viktor Sipach",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/viktorsipach/virtual-keyboard/issues"
+  },
+  "homepage": "https://github.com/viktorsipach/virtual-keyboard#readme"
+}

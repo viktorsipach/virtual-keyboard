@@ -1,0 +1,32 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true
+    },
+    "extends": "airbnb",
+    "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly"
+    },
+    "parserOptions": {
+        "ecmaVersion": 2018
+    },
+    "rules": {
+        "linebreak-style": [
+            "error",
+            "windows"
+        ],
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "semi": [
+            "error",
+            "never"
+        ],
+        "no-restricted-syntax": [
+            "error", 
+            "WithStatement", 
+            "BinaryExpression[operator='in']"]
+    }
+}
