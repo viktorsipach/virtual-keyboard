@@ -74,31 +74,17 @@ const Keyboard = {
   },
 
   changeLanguage() {
-    const pressed = new Set()
-    const codes = ['ShiftLeft', 'AltLeft']
-    document.addEventListener('keydown', (e) => {
-      pressed.add(e.code)
-      for (const code of codes) {
-        if (!pressed.has(code)) {
-          return
-        }
-        pressed.clear()
-        const delElem = document.querySelectorAll('.keyboard__row')
-        for (let i = 0; i < delElem.length; i = 1 + i) {
-          delElem[i].remove()
-        }
-        if (this.properties.rusLang) {
-          this.properties.rusLang = false
-          this.createKeys(this.alphabet.rus)
-        } else {
-          this.properties.rusLang = true
-          this.createKeys(this.alphabet.eng)
-        }
-      }
-    })
-    document.addEventListener('keyup', (e) => {
-      pressed.delete(e.code)
-    })
+    const delElem = document.querySelectorAll('.keyboard__row')
+    for (let i = 0; i < delElem.length; i = 1 + i) {
+      delElem[i].remove()
+    }
+    if (this.properties.rusLang) {
+      this.properties.rusLang = false
+      this.createKeys(this.alphabet.rus)
+    } else {
+      this.properties.rusLang = true
+      this.createKeys(this.alphabet.eng)
+    }
   },
 
   printMassege(btn) {
@@ -112,12 +98,14 @@ const Keyboard = {
   },
 
   checkPressedBtn(btn, event) {
-    const mainKeys = ['Backspace', 'del', 'Tab', 'CapsLock', 'Space', 'ShiftLeft', 'Enter', 'ControlLeft',
+    const mainKeys = ['Backspace', 'del', 'Tab', 'CapsLock', 'Space', 'ShiftLeft', 'Enter', 'ShiftRight', 'ControlLeft',
       'MetaLeft', 'AltLeft', 'Space', 'AltRight', 'ControlRight', 'ArrowLeft', 'ArrowDown', 'ArrowRight', 'ArrowUp']
     const buttons = document.querySelectorAll('.btn')
     if (mainKeys.includes(btn)) {
       buttons.forEach((el) => {
         if (el.id === btn) {
+          const output = document.querySelector('.input')
+          output.focus()
           this.animation(el.id)
         }
       })
@@ -133,12 +121,36 @@ const Keyboard = {
   },
 
   listenRealKeyboard() {
+    const pressed = new Set()
+    const codeForChangeLang = ['AltLeft', 'ShiftLeft']
     window.addEventListener('keydown', (e) => {
       const btn = e.code
+      if (btn === 'CapsLock') {
+        if (this.properties.capsLock === false) {
+          this.properties.capsLock = true
+          this.checkPressedBtn(btn, e)
+          this.changeLanguage()
+        } else {
+          this.properties.capsLock = false
+          this.checkPressedBtn(btn, e)
+          this.changeLanguage()
+        }
+      }
+      pressed.add(btn)
+      this.checkPressedBtn(btn, e)
+      for (const code of codeForChangeLang) {
+        if (!pressed.has(code)) {
+          return
+        }
+        pressed.clear()
+        this.changeLanguage()
+        this.checkPressedBtn(btn, e)
+      }
       this.checkPressedBtn(btn, e)
     })
     window.addEventListener('keyup', (e) => {
       const buttons = document.querySelectorAll('.btn')
+      pressed.delete(e.code)
       buttons.forEach((btn) => {
         if (btn.id === e.code) {
           this.defaultStyle(btn.id)
@@ -151,6 +163,5 @@ const Keyboard = {
 window.addEventListener('load', () => {
   Keyboard.addElements()
   Keyboard.createKeys(Keyboard.alphabet.eng)
-  Keyboard.changeLanguage()
   Keyboard.listenRealKeyboard()
 })
