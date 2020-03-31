@@ -125,26 +125,47 @@
     background-color: rgba(0, 0, 0, 0.2);
   }
 
-  .keyboard__row .backspace {
-    width: 10%;
-  }
-
-  .keyboard__row .tab, .keyboard__row .del {
+  .keyboard__row .btn{
     width: 5%;
   }
 
-  .keyboard__row .capslock, .keyboard__row .shiftleft {
-    width: 10%;
+  #Space {
+    width: 35%;
   }
 
-  .keyboard__row .enter {
+  #Enter {
     width: 8%;
   }
 
-  .keyboard__row .ctrl {
+  #CapsLock  {
+    width: 7%;
+    font-size: calc(0.7vw + 4px);
+  }
+
+  #Backspace {
+    width: 10%;
+  }
+
+  #ShiftLeft {
+    width: 9%;
+  }
+
+  #ShiftRight {
     width: 6%;
   }
-  
-  .keyboard__row .space {
-    width: 35%;
+
+  #ArrowUp {
+    font-size: calc(0.7vw + 1px);
+  }
+
+  #ArrowDown {
+    font-size: calc(0.7vw + 1px);
+  }
+
+  #ArrowLeft {
+    font-size: calc(0.7vw + 1px);
+  }
+
+  #ArrowRight {
+    font-size: calc(0.7vw + 1px);
   }
