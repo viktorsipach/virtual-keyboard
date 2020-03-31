@@ -70,7 +70,7 @@
   
   .input {
     width: 65%;
-    height: 100px;
+    height: 25%;
     margin: 0 auto;
     display: block;
     position: absolute;
@@ -79,6 +79,7 @@
     color: #131313;
     font-size: 1rem;
     font-family: 'Open Sans', sans-serif;
+    resize: none;
   }
   
   .keyboard {

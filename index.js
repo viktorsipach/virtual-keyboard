@@ -81,13 +81,15 @@ const Keyboard = {
     if (this.properties.rusLang) {
       this.properties.rusLang = false
       this.createKeys(this.alphabet.rus)
+      localStorage.setItem('rusLang', this.properties.rusLang)
     } else {
       this.properties.rusLang = true
       this.createKeys(this.alphabet.eng)
+      localStorage.setItem('rusLang', this.properties.rusLang)
     }
   },
 
-  printMassege(btn) {
+  printMassage(btn) {
     const output = document.querySelector('.input')
     const buttons = document.querySelectorAll('.btn')
     buttons.forEach((el) => {
@@ -114,7 +116,7 @@ const Keyboard = {
         if (el.id === btn) {
           event.preventDefault()
           this.animation(el.id)
-          this.printMassege(el.id)
+          this.printMassage(el.id)
         }
       })
     }
@@ -160,8 +162,15 @@ const Keyboard = {
   },
 }
 
+
 window.addEventListener('load', () => {
   Keyboard.addElements()
-  Keyboard.createKeys(Keyboard.alphabet.eng)
+  if (localStorage.getItem('rusLang') === 'null') {
+    Keyboard.createKeys(Keyboard.alphabet.eng)
+  } else if (localStorage.getItem('rusLang') === 'false') {
+    Keyboard.createKeys(Keyboard.alphabet.rus)
+  } else {
+    Keyboard.createKeys(Keyboard.alphabet.eng)
+  }
   Keyboard.listenRealKeyboard()
 })
