@@ -102,6 +102,15 @@
     background: rgba(211,211,211, 1.0);
   }
 
+  .text {
+    position: absolute;
+    left: 13%;
+    bottom: 5%;
+    font-family: 'Open Sans', sans-serif;
+    font-size: calc(0.7vw + 5px);
+    color: #131313;
+  }
+
   .keyboard__row {
     display: flex;
     justify-content: space-between;

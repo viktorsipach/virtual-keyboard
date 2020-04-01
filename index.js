@@ -34,12 +34,16 @@ const Keyboard = {
     const input = document.createElement('textarea')
     const section = document.createElement('section')
     const keyboard = document.createElement('div')
+    const text = document.createElement('p')
     section.className = 'main'
     input.className = 'input'
     keyboard.className = 'keyboard'
+    text.className = 'text'
+    text.innerHTML = 'Change language (ctrl + alt)'
     document.body.append(section)
     document.querySelector('.main').appendChild(input)
     document.querySelector('.main').appendChild(keyboard)
+    document.querySelector('.main').appendChild(text)
   },
 
   createKeys(alphabet) {
@@ -100,13 +104,13 @@ const Keyboard = {
   },
 
   checkPressedBtn(btn, event) {
-    const mainKeys = ['Backspace', 'del', 'Tab', 'CapsLock', 'Space', 'ShiftLeft', 'Enter', 'ShiftRight', 'ControlLeft',
-      'MetaLeft', 'AltLeft', 'Space', 'AltRight', 'ControlRight', 'ArrowLeft', 'ArrowDown', 'ArrowRight', 'ArrowUp']
+    const mainKeys = ['Backspace', 'del', 'Tab', 'CapsLock', 'Space', 'Enter', 'ShiftLeft', 'ControlLeft',
+      'MetaLeft', 'AltLeft', 'Space', 'AltRight', 'ControlRight', 'ShiftRight', 'ArrowLeft', 'ArrowDown', 'ArrowRight', 'ArrowUp']
     const buttons = document.querySelectorAll('.btn')
+    const output = document.querySelector('.input')
     if (mainKeys.includes(btn)) {
       buttons.forEach((el) => {
         if (el.id === btn) {
-          const output = document.querySelector('.input')
           output.focus()
           this.animation(el.id)
         }
@@ -115,44 +119,68 @@ const Keyboard = {
       buttons.forEach((el) => {
         if (el.id === btn) {
           event.preventDefault()
+          output.focus()
           this.animation(el.id)
           this.printMassage(el.id)
         }
       })
     }
   },
+  addKeydownCapsLockHandler(btn, event) {
+    if (this.properties.capsLock === false) {
+      this.properties.capsLock = true
+      this.checkPressedBtn(btn, event)
+      this.changeLanguage()
+    } else {
+      this.properties.capsLock = false
+      this.checkPressedBtn(btn, event)
+      this.changeLanguage()
+    }
+  },
+
+  addKeydownShiftHandler(btn, event) {
+    if (this.properties.shift === false) {
+      this.properties.shift = true
+      this.checkPressedBtn(btn, event)
+      const specSymbols = ['~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', 'backspace']
+      const rows = document.querySelectorAll('.keyboard__row')
+      const specRow = document.createElement('div')
+      specRow.className = 'keyboard__row row-1'
+      for (let i = 0; i < specSymbols.length; i = 1 + i) {
+        const specBtn = document.createElement('div')
+        specBtn.className = `btn btn-1-${i + 1}}`
+        specBtn.id = `${this.keyCode.id[0][i]}`
+        specBtn.innerHTML = specSymbols[i]
+        specRow.append(specBtn)
+      }
+      rows[0].replaceWith(specRow)
+    } else {
+      this.properties.shift = false
+      this.checkPressedBtn(btn, event)
+      this.changeLanguage()
+    }
+  },
 
   listenRealKeyboard() {
-    const pressed = new Set()
-    const codeForChangeLang = ['AltLeft', 'ShiftLeft']
     window.addEventListener('keydown', (e) => {
       const btn = e.code
       if (btn === 'CapsLock') {
-        if (this.properties.capsLock === false) {
-          this.properties.capsLock = true
-          this.checkPressedBtn(btn, e)
-          this.changeLanguage()
-        } else {
-          this.properties.capsLock = false
-          this.checkPressedBtn(btn, e)
-          this.changeLanguage()
-        }
-      }
-      pressed.add(btn)
-      this.checkPressedBtn(btn, e)
-      for (const code of codeForChangeLang) {
-        if (!pressed.has(code)) {
-          return
-        }
-        pressed.clear()
-        this.changeLanguage()
+        this.addKeydownCapsLockHandler(btn, e)
+      } else if (btn === 'ShiftLeft' || btn === 'ShiftRight') {
+        e.preventDefault()
+        this.addKeydownShiftHandler(btn, e)
+      } else if (btn === 'AltLeft' || btn === 'AltRight') {
+        e.preventDefault()
+      } else if (btn === 'Tab') {
+        e.preventDefault()
+      } else if (e.ctrlKey && e.altKey) {
         this.checkPressedBtn(btn, e)
+        this.changeLanguage()
       }
       this.checkPressedBtn(btn, e)
     })
     window.addEventListener('keyup', (e) => {
       const buttons = document.querySelectorAll('.btn')
-      pressed.delete(e.code)
       buttons.forEach((btn) => {
         if (btn.id === e.code) {
           this.defaultStyle(btn.id)
