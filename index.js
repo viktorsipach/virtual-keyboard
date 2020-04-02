@@ -2,9 +2,9 @@ const Keyboard = {
 
   alphabet: {
     rus: [['ё', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'backspace'],
-      ['tab', 'й', 'ц', 'у', 'к', 'е', 'н', 'г', 'ш', 'щ', 'з', 'х', 'ъ', '\\', 'del'],
+      ['tab', 'й', 'ц', 'у', 'к', 'е', 'н', 'г', 'ш', 'щ', 'з', 'х', 'ъ', '/', 'del'],
       ['capslock', 'ф', 'ы', 'в', 'а', 'п', 'р', 'о', 'л', 'д', 'ж', 'э', 'enter'],
-      ['shift', 'я', 'ч', 'с', 'м', 'и', 'т', 'ь', 'б', 'ю', '/', 'up', 'shift'],
+      ['shift', 'я', 'ч', 'с', 'м', 'и', 'т', 'ь', 'б', 'ю', '.', 'up', 'shift'],
       ['ctrl', 'win', 'alt', ' ', 'alt', 'ctrl', 'left', 'down', 'right']],
 
     eng: [['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'backspace'],
@@ -53,14 +53,10 @@ const Keyboard = {
       document.querySelector('.keyboard').appendChild(row)
       for (let j = 0; j < alphabet[i].length; j = 1 + j) {
         const btn = document.createElement('div')
-        btn.className = `btn btn-${i + 1}-${j + 1}}`
+        btn.className = `btn btn-${i + 1}-${j + 1}`
         btn.id = `${this.keyCode.id[i][j]}`
         document.querySelector(`.row-${i + 1}`).append(btn)
-        if (this.properties.capsLock) {
-          btn.innerHTML = alphabet[i][j].toUpperCase()
-        } else {
-          btn.innerHTML = alphabet[i][j]
-        }
+        btn.innerHTML = alphabet[i][j]
       }
     }
   },
@@ -83,12 +79,14 @@ const Keyboard = {
       delElem[i].remove()
     }
     if (this.properties.rusLang) {
-      this.properties.rusLang = false
       this.createKeys(this.alphabet.rus)
+      this.properties.rusLang = false
+      localStorage.removeItem('rusLang')
       localStorage.setItem('rusLang', this.properties.rusLang)
     } else {
-      this.properties.rusLang = true
       this.createKeys(this.alphabet.eng)
+      this.properties.rusLang = true
+      localStorage.removeItem('rusLang')
       localStorage.setItem('rusLang', this.properties.rusLang)
     }
   },
@@ -126,25 +124,41 @@ const Keyboard = {
       })
     }
   },
-  addKeydownCapsLockHandler(btn, event) {
+
+  addCapsLockHandler(btn, event) {
     if (this.properties.capsLock === false) {
+      const buttons = document.querySelectorAll('.btn')
+      this.checkPressedBtn(btn, event)
+      buttons.forEach((el) => {
+        el.innerHTML = el.innerHTML.toUpperCase()
+      })
       this.properties.capsLock = true
-      this.checkPressedBtn(btn, event)
-      this.changeLanguage()
     } else {
-      this.properties.capsLock = false
+      const buttons = document.querySelectorAll('.btn')
       this.checkPressedBtn(btn, event)
-      this.changeLanguage()
+      buttons.forEach((el) => {
+        el.innerHTML = el.innerHTML.toLowerCase()
+      })
+      this.properties.capsLock = false
     }
   },
 
-  addKeydownShiftHandler(btn, event) {
+  addShiftHandler(btn, event) {
     if (this.properties.shift === false) {
-      this.properties.shift = true
-      this.checkPressedBtn(btn, event)
       const specSymbols = ['~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', 'backspace']
+      const backSlash = document.getElementById('Backslash')
+      const bracketLeft = document.getElementById('BracketLeft')
+      const bracketRight = document.getElementById('BracketRight')
+      const semicolon = document.getElementById('Semicolon')
+      const quote = document.getElementById('Quote')
+      const comma = document.getElementById('Comma')
+      const period = document.getElementById('Period')
+      const slash = document.getElementById('Slash')
       const rows = document.querySelectorAll('.keyboard__row')
       const specRow = document.createElement('div')
+
+      this.properties.shift = true
+      this.checkPressedBtn(btn, event)
       specRow.className = 'keyboard__row row-1'
       for (let i = 0; i < specSymbols.length; i = 1 + i) {
         const specBtn = document.createElement('div')
@@ -154,10 +168,65 @@ const Keyboard = {
         specRow.append(specBtn)
       }
       rows[0].replaceWith(specRow)
+      backSlash.innerHTML = '|'
+      bracketLeft.innerHTML = '{'
+      bracketRight.innerHTML = '}'
+      semicolon.innerHTML = ':'
+      quote.innerHTML = '"'
+      comma.innerHTML = '<'
+      period.innerHTML = '>'
+      slash.innerHTML = '?'
+
     } else {
+      const rows = document.querySelectorAll('.keyboard__row')
+      const row = document.createElement('div')
+      const backSlash = document.getElementById('Backslash')
+      const bracketLeft = document.getElementById('BracketLeft')
+      const bracketRight = document.getElementById('BracketRight')
+      const semicolon = document.getElementById('Semicolon')
+      const quote = document.getElementById('Quote')
+      const comma = document.getElementById('Comma')
+      const period = document.getElementById('Period')
+      const slash = document.getElementById('Slash')
+      let alphabet = null
+      
       this.properties.shift = false
       this.checkPressedBtn(btn, event)
-      this.changeLanguage()
+      row.className = 'keyboard__row row-1'
+      if (this.properties.rusLang) {
+        alphabet = this.alphabet.eng
+      } else {
+        alphabet = this.alphabet.rus
+      }
+      for (let i = 0; i < alphabet[0].length; i = 1 + i) {
+        const btn = document.createElement('div')
+        btn.className = `btn btn-1-${i + 1}}`
+        btn.id = `${this.keyCode.id[0][i]}`
+        btn.innerHTML = alphabet[0][i]
+        row.append(btn)
+      }
+      rows[0].replaceWith(row)
+      if (this.properties.rusLang) {
+        backSlash.innerHTML = '\\'
+        bracketLeft.innerHTML = '['
+        bracketRight.innerHTML = ']'
+        semicolon.innerHTML = ';'
+        quote.innerHTML = '\''
+        quote.innerHTML = '\''
+        comma.innerHTML = ','
+        period.innerHTML = '.'
+        slash.innerHTML = '/'
+      } else {
+        backSlash.innerHTML = '/'
+        bracketLeft.innerHTML = 'х'
+        bracketRight.innerHTML = 'ъ'
+        semicolon.innerHTML = 'ж'
+        quote.innerHTML = 'э'
+        comma.innerHTML = 'б'
+        period.innerHTML = 'ю'
+        slash.innerHTML = '.'
+      }
+      
     }
   },
 
@@ -165,15 +234,14 @@ const Keyboard = {
     window.addEventListener('keydown', (e) => {
       const btn = e.code
       if (btn === 'CapsLock') {
-        this.addKeydownCapsLockHandler(btn, e)
+        this.addCapsLockHandler(btn, e)
       } else if (btn === 'ShiftLeft' || btn === 'ShiftRight') {
-        e.preventDefault()
-        this.addKeydownShiftHandler(btn, e)
+        this.addShiftHandler(btn, e)
       } else if (btn === 'AltLeft' || btn === 'AltRight') {
         e.preventDefault()
       } else if (btn === 'Tab') {
         e.preventDefault()
-      } else if (e.ctrlKey && e.altKey) {
+      } else if (e.altKey && e.ctrlKey) {
         this.checkPressedBtn(btn, e)
         this.changeLanguage()
       }
