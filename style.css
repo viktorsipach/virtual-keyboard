@@ -109,6 +109,7 @@
     font-family: 'Open Sans', sans-serif;
     font-size: calc(0.7vw + 5px);
     color: #131313;
+    user-select: none;
   }
 
   .keyboard__row {
