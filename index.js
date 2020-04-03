@@ -17,7 +17,7 @@ const Keyboard = {
 
   keyCode: {
     id: [['Backquote', 'Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6', 'Digit7', 'Digit8', 'Digit9', 'Digit0', 'Minus', 'Equal', 'Backspace'],
-      ['Tab', 'KeyQ', 'KeyW', 'KeyE', 'KeyR', 'KeyT', 'KeyY', 'KeyU', 'KeyI', 'KeyO', 'KeyP', 'BracketLeft', 'BracketRight', 'Backslash', 'del'],
+      ['Tab', 'KeyQ', 'KeyW', 'KeyE', 'KeyR', 'KeyT', 'KeyY', 'KeyU', 'KeyI', 'KeyO', 'KeyP', 'BracketLeft', 'BracketRight', 'Backslash', 'Del'],
       ['CapsLock', 'KeyA', 'KeyS', 'KeyD', 'KeyF', 'KeyG', 'KeyH', 'KeyJ', 'KeyK', 'KeyL', 'Semicolon', 'Quote', 'Enter'],
       ['ShiftLeft', 'KeyZ', 'KeyX', 'KeyC', 'KeyV', 'KeyB', 'KeyN', 'KeyM', 'Comma', 'Period', 'Slash', 'ArrowUp', 'ShiftRight'],
       ['ControlLeft', 'MetaLeft', 'AltLeft', 'Space', 'AltRight', 'ControlRight', 'ArrowLeft', 'ArrowDown', 'ArrowRight']],
@@ -26,7 +26,6 @@ const Keyboard = {
   properties: {
     capsLock: false,
     shift: false,
-    alt: false,
     rusLang: false,
   },
 
@@ -39,7 +38,7 @@ const Keyboard = {
     input.className = 'input'
     keyboard.className = 'keyboard'
     text.className = 'text'
-    text.innerHTML = `Change language (ctrl + alt), Click (win)`
+    text.innerHTML = 'Change language (ctrl + alt), Click (win)'
     document.body.append(section)
     document.querySelector('.main').appendChild(input)
     document.querySelector('.main').appendChild(keyboard)
@@ -102,7 +101,7 @@ const Keyboard = {
   },
 
   checkPressedBtn(btn, event) {
-    const mainKeys = ['Backspace', 'del', 'Tab', 'CapsLock', 'Space', 'Enter', 'ShiftLeft', 'ControlLeft',
+    const mainKeys = ['Backspace', 'Del', 'Tab', 'CapsLock', 'Space', 'Enter', 'ShiftLeft', 'ControlLeft',
       'MetaLeft', 'AltLeft', 'Space', 'AltRight', 'ControlRight', 'ShiftRight', 'ArrowLeft', 'ArrowDown', 'ArrowRight', 'ArrowUp']
     const buttons = document.querySelectorAll('.btn')
     const output = document.querySelector('.input')
@@ -130,14 +129,16 @@ const Keyboard = {
       const buttons = document.querySelectorAll('.btn')
       this.checkPressedBtn(btn, event)
       buttons.forEach((el) => {
-        el.innerHTML = el.innerHTML.toUpperCase()
+        const button = el
+        button.innerHTML = el.innerHTML.toUpperCase()
       })
       this.properties.capsLock = true
     } else {
       const buttons = document.querySelectorAll('.btn')
       this.checkPressedBtn(btn, event)
       buttons.forEach((el) => {
-        el.innerHTML = el.innerHTML.toLowerCase()
+        const button = el
+        button.innerHTML = el.innerHTML.toLowerCase()
       })
       this.properties.capsLock = false
     }
@@ -176,7 +177,6 @@ const Keyboard = {
       comma.innerHTML = '&#8249'
       period.innerHTML = '&#8250'
       slash.innerHTML = '?'
-
     } else {
       const rows = document.querySelectorAll('.keyboard__row')
       const row = document.createElement('div')
@@ -189,7 +189,7 @@ const Keyboard = {
       const period = document.getElementById('Period')
       const slash = document.getElementById('Slash')
       let alphabet = null
-      
+
       this.properties.shift = false
       this.checkPressedBtn(btn, event)
       row.className = 'keyboard__row row-1'
@@ -199,11 +199,11 @@ const Keyboard = {
         alphabet = this.alphabet.rus
       }
       for (let i = 0; i < alphabet[0].length; i = 1 + i) {
-        const btn = document.createElement('div')
-        btn.className = `btn btn-1-${i + 1}}`
-        btn.id = `${this.keyCode.id[0][i]}`
-        btn.innerHTML = alphabet[0][i]
-        row.append(btn)
+        const standardBtn = document.createElement('div')
+        standardBtn.className = `btn btn-1-${i + 1}}`
+        standardBtn.id = `${this.keyCode.id[0][i]}`
+        standardBtn.innerHTML = alphabet[0][i]
+        row.append(standardBtn)
       }
       rows[0].replaceWith(row)
       if (this.properties.rusLang) {
@@ -226,7 +226,6 @@ const Keyboard = {
         period.innerHTML = 'ю'
         slash.innerHTML = '.'
       }
-      
     }
   },
 
@@ -237,19 +236,32 @@ const Keyboard = {
 
   addClickBackspaceHandler() {
     const output = document.querySelector('.input')
-    output.value = output.value.slice(0, -1)
+    output.setRangeText('', output.selectionStart - 1, output.selectionEnd)
   },
 
   addClickSpaceHandler() {
     const output = document.querySelector('.input')
-    output.value += ' '
+    output.setRangeText(' ', output.selectionStart, output.selectionEnd, 'end')
+  },
+
+  addClickEnterHandler() {
+    const output = document.querySelector('.input')
+    output.value += '\n'
+  },
+
+  addClickDelHandler() {
+    const output = document.querySelector('.input')
+    output.setRangeText('', output.selectionStart, output.selectionEnd + 1)
+  },
+
+  addClickArrowsHandler(btn) {
+    this.printMassage(btn)
   },
 
   addClickKeyboardHandler() {
     const keyboard = document.querySelector('.keyboard')
     keyboard.addEventListener('mousedown', (e) => {
       const btn = e.target.id
-      console.log(btn)
       if (btn === 'CapsLock') {
         this.addCapsLockHandler(btn, e)
       } else if (btn === 'ShiftLeft' || btn === 'ShiftRight') {
@@ -266,6 +278,15 @@ const Keyboard = {
       } else if (btn === 'MetaLeft') {
         this.checkPressedBtn(btn, e)
         this.changeLanguage()
+      } else if (btn === 'Enter') {
+        e.preventDefault()
+        this.addClickEnterHandler()
+      } else if (btn === 'Del') {
+        e.preventDefault()
+        this.addClickDelHandler()
+      } else if (btn === 'ArrowLeft' || btn === 'ArrowRight' || btn === 'ArrowUp' || btn === 'ArrowDown') {
+        e.preventDefault()
+        this.addClickArrowsHandler(btn)
       }
       this.checkPressedBtn(btn, e)
     })
